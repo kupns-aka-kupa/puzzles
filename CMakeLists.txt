@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(front LANGUAGES CXX)
+project(front VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -32,6 +32,10 @@ file(GLOB HEADER_FILES ${PROJECT_SOURCE_DIR}/*.hpp)
 file(GLOB UI_FILES ${PROJECT_SOURCE_DIR}/static/ui/*.ui)
 file(GLOB RESOURCE_FILES ${PROJECT_SOURCE_DIR}/static/*.qrc)
 file(GLOB TS_FILES ${PROJECT_SOURCE_DIR}/*.ts)
+
+set(GENERATED_DIR ${PROJECT_SOURCE_DIR}/gen)
+
+configure_file(config.hpp.in ${GENERATED_DIR}/config.hpp)
 
 set(PROJECT_SOURCES
     ${SOURCE_FILES}

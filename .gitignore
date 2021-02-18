@@ -71,7 +71,8 @@ Thumbs.db
 *.dll
 *.exe
 
+gen/
+.idea
 *.user
 bin/
 build/
-.idea/
