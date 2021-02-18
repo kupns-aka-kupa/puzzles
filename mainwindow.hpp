@@ -9,7 +9,7 @@
 #include <QFontDatabase>
 #include <QStandardItemModel>
 #include "tableviewitemdelegate.hpp"
-#include "table.hpp"
+#include "tablemodel.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,8 +25,6 @@ public:
 
 private:
     QStandardItemModel *model;
-    Table *table;
-    TableViewItemDelegate *delegate;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_HPP

@@ -1,7 +1,7 @@
 #include "tableviewitemdelegate.hpp"
 
 TableViewItemDelegate::TableViewItemDelegate(QObject *parent)
-    : QItemDelegate(parent) { }
+    : QStyledItemDelegate(parent) { }
 
 
 QWidget *TableViewItemDelegate::createEditor(
@@ -30,6 +30,19 @@ void TableViewItemDelegate::setModelData(
         const QModelIndex &) const
 {
 
+}
+
+void TableViewItemDelegate::paint(
+        QPainter *painter,
+        const QStyleOptionViewItem &option,
+        const QModelIndex &index) const
+{
+    QVariant data = index.data();
+
+    auto [value, color] = data.value<Item>();
+    painter->fillRect(option.rect, color);
+
+    QStyledItemDelegate::paint(painter, option, index);
 }
 
 void TableViewItemDelegate::updateEditorGeometry(

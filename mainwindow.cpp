@@ -3,14 +3,14 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , model(new QStandardItemModel(5, 5))
-    , table(new Table{5, 5})
-    , delegate(new TableViewItemDelegate(this))
+    , model(new TableModel{5, 5})
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     auto tableView = ui->tableView;
+
     tableView->setModel(model);
+    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QList<QHeaderView*> headers
@@ -27,15 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QFont cellFont("mainfont.ttf", 24, QFont::Normal);
     tableView->setFont(cellFont);
-
-    for(int i = 0; i < model->columnCount(); i++)
-    {
-        for(int j = 0; j < model->rowCount(); j++)
-        {
-            QModelIndex index = model->index(i, j, QModelIndex());
-            model->setData(index, i + j);
-        }
-    }
 }
 
 void loadFont()
@@ -48,5 +39,5 @@ void loadFont()
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete table;
+    delete model;
 }

@@ -1,10 +1,13 @@
 #ifndef TABLEVIEWITEMDELEGATE_HPP
 #define TABLEVIEWITEMDELEGATE_HPP
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 #include <QSpinBox>
+#include <QVariant>
+#include <QPainter>
+#include "tablemodel.hpp"
 
-class TableViewItemDelegate : public QItemDelegate
+class TableViewItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
@@ -26,6 +29,11 @@ public:
 
     void updateEditorGeometry(
             QWidget *editor,
+            const QStyleOptionViewItem &option,
+            const QModelIndex &index) const override;
+
+    void paint(
+            QPainter *painter,
             const QStyleOptionViewItem &option,
             const QModelIndex &index) const override;
 };
