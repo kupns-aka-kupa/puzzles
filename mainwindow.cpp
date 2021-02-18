@@ -4,6 +4,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , model(new QStandardItemModel(5, 5))
+    , table(new Table{5, 5})
     , delegate(new TableViewItemDelegate(this))
     , ui(new Ui::MainWindow)
 {
@@ -47,4 +48,5 @@ void loadFont()
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete table;
 }
