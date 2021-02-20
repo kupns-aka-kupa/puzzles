@@ -38,9 +38,11 @@ void TableViewItemDelegate::paint(
         const QModelIndex &index) const
 {
     QVariant data = index.data();
+    const QRect &rect = option.rect;
 
     auto [value, color] = data.value<Item>();
-    painter->fillRect(option.rect, color);
+    painter->fillRect(rect, color);
+    painter->drawText(rect, Qt::AlignCenter, value);
 
     QStyledItemDelegate::paint(painter, option, index);
 }

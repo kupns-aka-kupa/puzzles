@@ -1,3 +1,3 @@
 # Puzzles
 
-![screenshot](./screenshot_1.png)
+![screenshot](screenshot_1.png)
