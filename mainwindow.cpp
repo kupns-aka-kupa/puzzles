@@ -3,12 +3,12 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , model(new TableModel{5, 5})
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     auto tableView = ui->tableView;
 
+    model = new TableModel(5, 5, tableView);
     tableView->setModel(model);
     tableView->setItemDelegate(new TableViewItemDelegate(tableView));
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
         tableView->verticalHeader()
     };
 
-    Q_FOREACH(auto header, headers)
+    foreach(auto header, headers)
     {
         header->setSectionResizeMode(QHeaderView::Stretch);
         header->hide();

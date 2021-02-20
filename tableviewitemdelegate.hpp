@@ -36,6 +36,8 @@ public:
             QPainter *painter,
             const QStyleOptionViewItem &option,
             const QModelIndex &index) const override;
+private:
+    Q_DISABLE_COPY(TableViewItemDelegate)
 };
 
 #endif // TABLEVIEWITEMDELEGATE_HPP
