@@ -39,12 +39,19 @@ void TableViewItemDelegate::paint(
 {
     QVariant data = index.data();
     const QRect &rect = option.rect;
+    auto item = data.value<Item>();
 
-    auto [value, color] = data.value<Item>();
+    auto value = item
+        .value(QMetaType::QString)
+        .value<QString>();
+
+    auto color = item
+        .value(QMetaType::QColor)
+        .value<QColor>();
+
     painter->fillRect(rect, color);
     painter->drawText(rect, Qt::AlignCenter, value);
-
-    QStyledItemDelegate::paint(painter, option, index);
+    Base::paint(painter, option, index);
 }
 
 void TableViewItemDelegate::updateEditorGeometry(

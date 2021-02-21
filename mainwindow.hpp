@@ -24,7 +24,6 @@ public:
     ~MainWindow();
 
 private:
-    QStandardItemModel *model;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_HPP

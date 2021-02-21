@@ -1,28 +1,36 @@
 #include "tablemodel.hpp"
 
-TableModel::TableModel(int i, int j, QObject *parent)
-    : Base(i, j, parent)
+TableModel::TableModel(int rows, int collumns, QObject *parent)
+    : Base(rows, collumns, parent)
 {
-    auto p = qobject_cast<QWidget *>(this->parent());
-    auto rect = p->rect();
-
-    QPointF finish (rect.bottomRight());
-    Gradient gradient({}, finish);
+    auto p = qobject_cast<QTableView *>(this->parent());
     QPixmap pixmap = p->grab();
+    auto rect = p->rect();
+    Gradient gradient(rect.topLeft(), rect.bottomRight());
 
     gradient.setColorAt(0, Colors::Red);
     gradient.setColorAt(1, Colors::Blue);
 
     QPainter painter(&pixmap);
     painter.fillRect(rect, gradient);
+    QImage image = pixmap.toImage();
+
+    auto size = rect.size();
+    size.rheight() /= columnCount();
+    size.rwidth() /= rowCount();
 
     for(int i = 0; i < columnCount(); i++)
     {
         for(int j = 0; j < rowCount(); j++)
         {
             auto index = this->index(i, j, QModelIndex());
-            auto color = gradient.getColor((qreal)(i + j));
-            Item c { QString::number(i + j), color.rgb()};
+            QRect r {{size.width() * i, size.height() * j}, size};
+
+            auto color = image.pixelColor(r.topLeft());
+            Item c {
+                {QMetaType::QString, QString::number(i + j)},
+                {QMetaType::QColor, color}
+            };
             setData(index, QVariant::fromValue(c));
         }
     }

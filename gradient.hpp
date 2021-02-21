@@ -10,11 +10,9 @@ class Gradient : public QLinearGradient
 {
     using Base = QLinearGradient;
 public:
-    Gradient()
-        : Base() { };
-
-    Gradient(const QPointF &s, const QPointF &f)
-        : Base(s, f) { };
+    Gradient();
+    Gradient(QRect rect);
+    Gradient(const QPointF &start, const QPointF &finish);
 
     QColor getColor(qreal key) const;
 

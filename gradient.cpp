@@ -1,5 +1,14 @@
 #include "gradient.hpp"
 
+Gradient::Gradient()
+    : Base() { };
+
+Gradient::Gradient(QRect rect)
+    : Gradient(rect.topLeft(), rect.bottomRight()) { };
+
+Gradient::Gradient(const QPointF &s, const QPointF &f)
+    : Base(s, f) { };
+
 QColor Gradient::getColor(qreal key) const
 {
     QMap<qreal, QColor> map;
