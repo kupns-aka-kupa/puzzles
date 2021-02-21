@@ -8,11 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     auto tableView = ui->tableView;
 
-    model = new TableModel(5, 5, tableView);
-    tableView->setModel(model);
-    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
-    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
     QList<QHeaderView*> headers
     {
         tableView->horizontalHeader(),
@@ -24,6 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
         header->setSectionResizeMode(QHeaderView::Stretch);
         header->hide();
     }
+
+    tableView->setModel(new TableModel(5, 5, tableView));
+    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableView->setDragEnabled(true);
 
     QFont cellFont("mainfont.ttf", 24, QFont::Normal);
     tableView->setFont(cellFont);
@@ -39,5 +39,4 @@ void loadFont()
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete model;
 }

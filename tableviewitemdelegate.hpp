@@ -10,6 +10,7 @@
 class TableViewItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
+    using Base = QStyledItemDelegate;
 public:
     TableViewItemDelegate(QObject *parent);
 
