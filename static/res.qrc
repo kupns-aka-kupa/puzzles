@@ -5,4 +5,7 @@
     <qresource prefix="/icons">
         <file>ico/icon.ico</file>
     </qresource>
+    <qresource prefix="/styles">
+        <file>styles/style.qss</file>
+    </qresource>
 </RCC>

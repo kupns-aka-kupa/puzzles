@@ -3,24 +3,41 @@
 TableModel::TableModel(int rows, int collumns, QObject *parent)
     : Base(rows, collumns, parent)
 {
+    init();
+}
+
+void TableModel::init()
+{
     auto tableView = qobject_cast<QTableView *>(this->parent());
+    QPixmap pixmap(initTablePixmap(tableView));
+    init(pixmap);
+}
+
+QPixmap TableModel::initTablePixmap(QTableView *tableView)
+{
     tableView->setItemDelegate(new TableViewItemDelegate(tableView));
 
     QPixmap pixmap = tableView->grab();
     auto rect = tableView->rect();
     Gradient gradient(rect.topLeft(), rect.bottomRight());
 
-    gradient.setColorAt(0, Colors::Red);
-    gradient.setColorAt(1, Colors::Blue);
+    gradient.setColorAt(0, Palette::Color::Red);
+    gradient.setColorAt(1, Palette::Color::Blue);
 
     QPainter painter(&pixmap);
     painter.fillRect(rect, gradient);
-    QImage image = pixmap.toImage();
 
-    auto size = rect.size();
+    return pixmap;
+}
+
+void TableModel::init(QPixmap &pixmap)
+{
+    QImage image = pixmap.toImage();
+    auto size = pixmap.rect().size();
     size.rheight() /= columnCount(); // size.scale(?, ?)
     size.rwidth() /= rowCount();
 
+    int data = 0;
     for(int i = 0; i < columnCount(); i++)
     {
         for(int j = 0; j < rowCount(); j++)
@@ -30,14 +47,14 @@ TableModel::TableModel(int rows, int collumns, QObject *parent)
 
             auto color = image.pixelColor(r.topLeft());
             Item item {
-                {QMetaType::QString, QString::number(i + j)},
+                {QMetaType::QString, QString::number(data++)},
                 {QMetaType::QColor, color}
             };
             setData(index, QVariant::fromValue(item));
         }
     }
-}
 
+}
 void TableModel::rotate(QPoint point, Move direction, int step)
 {
     rotate(point.x(), point.y(), direction, step);
@@ -78,10 +95,10 @@ QList<QModelIndex> TableModel::rotateHelper(int row, int collumn, Move direction
     }
 }
 
-void TableModel::applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo)
+void TableModel::applyRotate(QListIterator<QModelIndex> applyTo, QList<QModelIndex> applied)
 {
-    QVector<QVariant> out(applyTo.length());
-    std::transform(applyTo.begin(), applyTo.end(), out.begin(),
+    QVector<QVariant> out(applied.length());
+    std::transform(applied.begin(), applied.end(), out.begin(),
     [](QModelIndex i) -> QVariant
     {
         return i.data();
@@ -89,10 +106,10 @@ void TableModel::applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> ap
 
     foreach(auto &index, out)
     {
-        setData(i.next(), index);
+        setData(applyTo.next(), index);
     }
 
-    emit dataChanged(applyTo.first(), applyTo.last());
+    emit dataChanged(applied.first(), applied.last());
 }
 
 QList<QModelIndex> TableModel::rowIterator(int row)
@@ -124,4 +141,33 @@ void TableModel::grabModeActivated()
 {
     auto tableView = qobject_cast<QTableView *>(this->parent());
     tableView->setDragEnabled(!tableView->dragEnabled());
+}
+
+void TableModel::applyConfig(QList<QString> config)
+{
+    foreach(auto move, config)
+    {
+        int index = move.rightRef(1).toInt();
+        rotate(index, index,
+            MoveLiteral.key({move.front()}));
+    }
+}
+
+void TableModel::scramble()
+{
+    int min = Move::Left;
+    int max = Move::Down;
+    std::uniform_int_distribution movesDistibution(min, max);
+    std::uniform_int_distribution indexDistribution(0, qMax(rowCount(), columnCount()));
+    auto gen = QRandomGenerator::global();
+
+    QList<QString> config;
+    for(int i = 0; i < ScrambleMovesCount; i++)
+    {
+        auto move = movesDistibution(*gen);
+        auto literal = MoveLiteral.value((Move)move);
+        config.append(MoveFormat.arg(literal).arg(indexDistribution(*gen)));
+    }
+
+    applyConfig(config);
 }
