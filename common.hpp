@@ -7,7 +7,7 @@
 
 QString operator""_Q(const char *, size_t);
 
-enum Move
+enum Move : int
 {
     Left,
     Right,
@@ -22,5 +22,17 @@ const static QMap<Move, QVector2D> MoveVector
     {Up, {-1, 0}},
     {Down, {1, 0}}
 };
+
+const static QMap<Move, QString> MoveLiteral
+{
+    {Left, "L"},
+    {Right, "R"},
+    {Up, "U"},
+    {Down, "D"}
+};
+
+const static auto MoveFormat = "%0%1"_Q;
+
+const static int ScrambleMovesCount = 50;
 
 #endif // COMMON_HPP

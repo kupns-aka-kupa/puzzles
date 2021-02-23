@@ -1,0 +1,10 @@
+
+QPushButton#pushButtonReset
+{
+    background-color: #ce4250;
+}
+
+QPushButton#pushButtonScrumble
+{
+    background-color: #2980b9;
+}

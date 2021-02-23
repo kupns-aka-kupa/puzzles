@@ -8,9 +8,11 @@
 #include <QDebug>
 #include <QAbstractItemView>
 #include <QShortcut>
+#include <QPalette>
 #include <QFontDatabase>
 #include <QStandardItemModel>
 #include "tablemodel.hpp"
+#include "palette.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -32,6 +34,9 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    void loadFont();
+    void setStyleSheet();
+
     TableModel *model;
     Ui::MainWindow *ui;
 };

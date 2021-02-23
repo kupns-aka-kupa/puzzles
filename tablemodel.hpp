@@ -7,13 +7,14 @@
 #include <QTableView>
 #include <QDebug>
 #include <QVectorIterator>
+#include <QRandomGenerator>
 #include <QStandardItemModel>
-#include <ranges>
+
+#include <random>
 
 #include "tableviewitemdelegate.hpp"
-
 #include "gradient.hpp"
-#include "colors.hpp"
+#include "palette.hpp"
 #include "common.hpp"
 
 using Item = QMap<int, QVariant>;
@@ -31,11 +32,17 @@ public:
 
     void rotate(int row, int collumn, Move direction, int step = 1);
     void rotate(QPoint point, Move direction, int step = 1);
+    void applyConfig(QList<QString> config);
 
 public slots:
+    void scramble();
+    void init();
     void grabModeActivated();
 
 private:
+    void init(QPixmap &pixmap);
+    QPixmap initTablePixmap(QTableView *tableView);
+
     QList<QModelIndex> rowIterator(int j);
     QList<QModelIndex> collumnIterator(int i);
     void applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo);
