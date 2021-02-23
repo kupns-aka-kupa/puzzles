@@ -40,15 +40,13 @@ public slots:
     void grabModeActivated();
 
 private:
-    void init(QPixmap &pixmap);
+    void initData(QPixmap &pixmap);
     QPixmap initTablePixmap(QTableView *tableView);
 
     QList<QModelIndex> rowIterator(int j);
     QList<QModelIndex> collumnIterator(int i);
     void applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo);
     QList<QModelIndex> rotateHelper(int row, int collumn, Move direction);
-
-    QRgb delta;
 };
 
 
