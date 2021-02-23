@@ -11,6 +11,10 @@
 #include <QPalette>
 #include <QFontDatabase>
 #include <QStandardItemModel>
+#include <QLabel>
+#include <QTimer>
+#include <QDateTime>
+
 #include "tablemodel.hpp"
 #include "palette.hpp"
 
@@ -28,15 +32,18 @@ public:
 
 public slots:
     void rotateTableModel(const QItemSelection &selected, const QItemSelection &deselected);
+    void time_update();
 
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event);
 
+
 private:
     void loadFont();
     void setStyleSheet();
 
+    QLabel *currentTimeLabel;
     TableModel *model;
     Ui::MainWindow *ui;
 };

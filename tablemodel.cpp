@@ -3,6 +3,8 @@
 TableModel::TableModel(int rows, int collumns, QObject *parent)
     : Base(rows, collumns, parent)
 {
+    auto tableView = qobject_cast<QTableView *>(this->parent());
+    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
     init();
 }
 
@@ -10,12 +12,11 @@ void TableModel::init()
 {
     auto tableView = qobject_cast<QTableView *>(this->parent());
     QPixmap pixmap(initTablePixmap(tableView));
-    init(pixmap);
+    initData(pixmap);
 }
 
 QPixmap TableModel::initTablePixmap(QTableView *tableView)
 {
-    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
 
     QPixmap pixmap = tableView->grab();
     auto rect = tableView->rect();
@@ -30,14 +31,13 @@ QPixmap TableModel::initTablePixmap(QTableView *tableView)
     return pixmap;
 }
 
-void TableModel::init(QPixmap &pixmap)
+void TableModel::initData(QPixmap &pixmap)
 {
     QImage image = pixmap.toImage();
     auto size = pixmap.rect().size();
     size.rheight() /= columnCount(); // size.scale(?, ?)
     size.rwidth() /= rowCount();
 
-    int data = 0;
     for(int i = 0; i < columnCount(); i++)
     {
         for(int j = 0; j < rowCount(); j++)
@@ -47,7 +47,7 @@ void TableModel::init(QPixmap &pixmap)
 
             auto color = image.pixelColor(r.topLeft());
             Item item {
-                {QMetaType::QString, QString::number(data++)},
+                {QMetaType::QString, QString::number(i * rowCount() + j)},
                 {QMetaType::QColor, color}
             };
             setData(index, QVariant::fromValue(item));

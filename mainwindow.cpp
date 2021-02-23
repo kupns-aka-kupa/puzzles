@@ -40,6 +40,12 @@ MainWindow::MainWindow(QWidget *parent)
         SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
         this,
         SLOT(rotateTableModel(const QItemSelection &, const QItemSelection &)));
+
+    currentTimeLabel = new QLabel;
+    statusBar->addWidget(currentTimeLabel);
+    QTimer *timer = new QTimer(this);
+    timer->start(1000);
+    connect(timer, SIGNAL(timeout()),this,SLOT(time_update()));
 }
 
 void MainWindow::rotateTableModel(
@@ -96,6 +102,15 @@ void MainWindow::loadFont()
     QFont cellFont(family, 50, QFont::Normal);
     ui->tableView->setFont(cellFont);
 }
+
+void MainWindow::time_update()
+{
+    QDateTime current_time = QDateTime::currentDateTime();
+    QString timestr = current_time.toString( "yyyy year MM month dd day hh:mm:ss");
+    currentTimeLabel->setText(timestr);
+
+}
+
 
 MainWindow::~MainWindow()
 {
