@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     auto tableView = ui->tableView;
+    auto statusBar = ui->statusBar;
 
     QList<QHeaderView*> headers
     {
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QFont cellFont("mainfont.ttf", 24, QFont::Normal);
     tableView->setFont(cellFont);
+
+    statusBar->
 
     connect(shortcut, SIGNAL(activated()), model, SLOT(grabModeActivated()));
     connect(tableView->selectionModel(),
