@@ -25,30 +25,25 @@ class TableModel : public QStandardItemModel
 {
     Q_OBJECT
     using Base = QStandardItemModel;
-public:
 
+public:
     TableModel() = default;
     explicit TableModel(int rows, int collumns, QObject *parent = nullptr);
 
     void rotate(int row, int collumn, Move direction, int step = 1);
     void rotate(QPoint point, Move direction, int step = 1);
     void applyConfig(QList<QString> config);
+    void setData(QPixmap &pixmap);
 
 public slots:
     void scramble();
-    void init();
-    void grabModeActivated();
 
 private:
-    void initData(QPixmap &pixmap);
-    QPixmap initTablePixmap(QTableView *tableView);
-
     QList<QModelIndex> rowIterator(int j);
     QList<QModelIndex> collumnIterator(int i);
     void applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo);
     QList<QModelIndex> rotateHelper(int row, int collumn, Move direction);
+
 };
-
-
 
 #endif // TABLE_HPP

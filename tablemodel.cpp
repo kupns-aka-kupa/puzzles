@@ -3,35 +3,9 @@
 TableModel::TableModel(int rows, int collumns, QObject *parent)
     : Base(rows, collumns, parent)
 {
-    auto tableView = qobject_cast<QTableView *>(this->parent());
-    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
-    init();
 }
 
-void TableModel::init()
-{
-    auto tableView = qobject_cast<QTableView *>(this->parent());
-    QPixmap pixmap(initTablePixmap(tableView));
-    initData(pixmap);
-}
-
-QPixmap TableModel::initTablePixmap(QTableView *tableView)
-{
-
-    QPixmap pixmap = tableView->grab();
-    auto rect = tableView->rect();
-    Gradient gradient(rect.topLeft(), rect.bottomRight());
-
-    gradient.setColorAt(0, Palette::Color::Red);
-    gradient.setColorAt(1, Palette::Color::Blue);
-
-    QPainter painter(&pixmap);
-    painter.fillRect(rect, gradient);
-
-    return pixmap;
-}
-
-void TableModel::initData(QPixmap &pixmap)
+void TableModel::setData(QPixmap &pixmap)
 {
     QImage image = pixmap.toImage();
     auto size = pixmap.rect().size();
@@ -50,11 +24,11 @@ void TableModel::initData(QPixmap &pixmap)
                 {QMetaType::QString, QString::number(i * rowCount() + j)},
                 {QMetaType::QColor, color}
             };
-            setData(index, QVariant::fromValue(item));
+            Base::setData(index, QVariant::fromValue(item));
         }
     }
-
 }
+
 void TableModel::rotate(QPoint point, Move direction, int step)
 {
     rotate(point.x(), point.y(), direction, step);
@@ -106,10 +80,8 @@ void TableModel::applyRotate(QListIterator<QModelIndex> applyTo, QList<QModelInd
 
     foreach(auto &index, out)
     {
-        setData(applyTo.next(), index);
+        Base::setData(applyTo.next(), index);
     }
-
-    emit dataChanged(applied.first(), applied.last());
 }
 
 QList<QModelIndex> TableModel::rowIterator(int row)
@@ -135,12 +107,6 @@ QList<QModelIndex> TableModel::collumnIterator(int collumn)
         list.append(item);
     }
     return list;
-}
-
-void TableModel::grabModeActivated()
-{
-    auto tableView = qobject_cast<QTableView *>(this->parent());
-    tableView->setDragEnabled(!tableView->dragEnabled());
 }
 
 void TableModel::applyConfig(QList<QString> config)

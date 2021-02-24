@@ -22,46 +22,37 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Space), tableView);
+
     model = new TableModel(5, 5, tableView);
+    game = new Game(model, tableView);
+    game->reset();
+
     model->applyConfig({"R0", "U0", "R3", "D1"});
     model->scramble();
 
     tableView->setModel(model);
+    tableView->setItemDelegate(new TableViewItemDelegate(tableView));
+
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableView->setDragEnabled(false);
 
     loadFont();
     setStyleSheet();
 
-    connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()) );
-    connect(ui->pushButtonReset, SIGNAL(clicked()), model, SLOT(init()) );
-    connect(shortcut, SIGNAL(activated()), model, SLOT(grabModeActivated()));
+    connect(game, SIGNAL(statusChanged(Game::Status)), this, SLOT(handleStatus(Game::Status)));
+    connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()));
+    connect(ui->pushButtonReset, SIGNAL(clicked()), game, SLOT(reset()));
+    connect(shortcut, SIGNAL(activated()), game, SLOT(grabModeActivated()));
     connect(tableView->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-        this,
+        game,
         SLOT(rotateTableModel(const QItemSelection &, const QItemSelection &)));
 
-    currentTimeLabel = new QLabel;
+    currentTimeLabel = new QLabel(statusBar);
     statusBar->addWidget(currentTimeLabel);
     QTimer *timer = new QTimer(this);
     timer->start(1000);
-    connect(timer, SIGNAL(timeout()),this,SLOT(time_update()));
-}
-
-void MainWindow::rotateTableModel(
-    const QItemSelection &selected,
-    const QItemSelection &deselected)
-{
-    if(!ui->tableView->dragEnabled()
-        || selected.empty()
-        || deselected.empty()) return;
-
-    auto s = deselected.first().indexes().first();
-    auto f = selected.first().indexes().first();
-
-    auto vector = QVector2D(f.row(), f.column()) - QVector2D(s.row(), s.column());
-    Move move = MoveVector.key(vector.normalized());
-    model->rotate(s.row(), s.column(), move);
+    connect(timer, SIGNAL(timeout()), this, SLOT(time_update()));
 }
 
 bool MainWindow::event(QEvent *event)
@@ -98,7 +89,7 @@ void MainWindow::loadFont()
 #endif
 
     int id = QFontDatabase::addApplicationFont(file.fileName());
-    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QString family = QFontDatabase::applicationFontFamilies(id).first();
     QFont cellFont(family, 50, QFont::Normal);
     ui->tableView->setFont(cellFont);
 }
@@ -108,9 +99,31 @@ void MainWindow::time_update()
     QDateTime current_time = QDateTime::currentDateTime();
     QString timestr = current_time.toString( "yyyy year MM month dd day hh:mm:ss");
     currentTimeLabel->setText(timestr);
-
 }
 
+void MainWindow::handleStatus(Game::Status status)
+{
+    qDebug() << status;
+    switch (status)
+    {
+        case Game::Stoped:
+            enableControls();
+            break;
+        case Game::InProgress:
+            disableControls();
+            break;
+    }
+}
+
+void MainWindow::disableControls()
+{
+    ui->pushButtonScrumble->setEnabled(false);
+}
+
+void MainWindow::enableControls()
+{
+    ui->pushButtonScrumble->setEnabled(true);
+}
 
 MainWindow::~MainWindow()
 {

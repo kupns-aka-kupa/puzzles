@@ -17,6 +17,7 @@
 
 #include "tablemodel.hpp"
 #include "palette.hpp"
+#include "game.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,13 +32,16 @@ public:
     ~MainWindow();
 
 public slots:
-    void rotateTableModel(const QItemSelection &selected, const QItemSelection &deselected);
     void time_update();
+    void disableControls();
+    void enableControls();
+
+private slots:
+    void handleStatus(Game::Status status);
 
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event);
-
 
 private:
     void loadFont();
@@ -45,6 +49,7 @@ private:
 
     QLabel *currentTimeLabel;
     TableModel *model;
+    Game *game;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_HPP
