@@ -13,7 +13,6 @@
 #include <QStandardItemModel>
 #include <QLabel>
 #include <QTimer>
-#include <QDateTime>
 
 #include "tablemodel.hpp"
 #include "palette.hpp"
@@ -32,12 +31,9 @@ public:
     ~MainWindow();
 
 public slots:
-    void time_update();
+    void timeUpdate();
     void disableControls();
     void enableControls();
-
-private slots:
-    void handleStatus(Game::Status status);
 
 protected:
     bool event(QEvent *event) override;
@@ -47,7 +43,9 @@ private:
     void loadFont();
     void setStyleSheet();
 
-    QLabel *currentTimeLabel;
+    QLabel *timerLabel;
+    QTimer *timer;
+
     TableModel *model;
     Game *game;
     Ui::MainWindow *ui;

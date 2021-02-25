@@ -3,6 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , timerLabel(new QLabel(this))
+    , timer(new QTimer(this))
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -39,7 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     loadFont();
     setStyleSheet();
 
-    connect(game, SIGNAL(statusChanged(Game::Status)), this, SLOT(handleStatus(Game::Status)));
+    connect(game, SIGNAL(started()), this, SLOT(disableControls()));
+    connect(game, SIGNAL(stoped()), this, SLOT(enableControls()));
     connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()));
     connect(ui->pushButtonReset, SIGNAL(clicked()), game, SLOT(reset()));
     connect(shortcut, SIGNAL(activated()), game, SLOT(grabModeActivated()));
@@ -48,11 +51,8 @@ MainWindow::MainWindow(QWidget *parent)
         game,
         SLOT(rotateTableModel(const QItemSelection &, const QItemSelection &)));
 
-    currentTimeLabel = new QLabel(statusBar);
-    statusBar->addWidget(currentTimeLabel);
-    QTimer *timer = new QTimer(this);
-    timer->start(1000);
-    connect(timer, SIGNAL(timeout()), this, SLOT(time_update()));
+    statusBar->addWidget(timerLabel);
+    timer->start(100);
 }
 
 bool MainWindow::event(QEvent *event)
@@ -94,34 +94,21 @@ void MainWindow::loadFont()
     ui->tableView->setFont(cellFont);
 }
 
-void MainWindow::time_update()
+void MainWindow::timeUpdate()
 {
-    QDateTime current_time = QDateTime::currentDateTime();
-    QString timestr = current_time.toString( "yyyy year MM month dd day hh:mm:ss");
-    currentTimeLabel->setText(timestr);
-}
-
-void MainWindow::handleStatus(Game::Status status)
-{
-    qDebug() << status;
-    switch (status)
-    {
-        case Game::Stoped:
-            enableControls();
-            break;
-        case Game::InProgress:
-            disableControls();
-            break;
-    }
+    QString time = game->currentTime().toString("hh:mm:ss,z");
+    timerLabel->setText(time);
 }
 
 void MainWindow::disableControls()
 {
+    connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
     ui->pushButtonScrumble->setEnabled(false);
 }
 
 void MainWindow::enableControls()
 {
+    disconnect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
     ui->pushButtonScrumble->setEnabled(true);
 }
 

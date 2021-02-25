@@ -5,6 +5,20 @@ Game::Game(TableModel *model, QObject *parent)
     , model(model)
     , tableView(qobject_cast<QTableView *>(parent))
 {
+    QState *idle = new QState();
+    QState *inProgress = new QState();
+
+    machine.addState(idle);
+    machine.addState(inProgress);
+
+    machine.setInitialState(idle);
+
+    idle->addTransition(this, &Game::started, inProgress);
+    inProgress->addTransition(this, &Game::stoped, idle);
+
+    connect(inProgress, SIGNAL(entered()), this, SLOT(start()));
+
+    machine.start();
 }
 
 void Game::rotateTableModel(
@@ -22,7 +36,7 @@ void Game::rotateTableModel(
     Move move = MoveVector.key(vector.normalized());
     model->rotate(s.row(), s.column(), move);
 
-    setStatus(Status::InProgress);
+    emit started();
 }
 
 void Game::grabModeActivated()
@@ -49,22 +63,18 @@ void Game::reset()
 {
     QPixmap pixmap(initTablePixmap());
     model->setData(pixmap);
-    setStatus(Status::Stoped);
+
+    emit stoped();
+}
+
+QTime Game::currentTime()
+{
+    return QTime::fromMSecsSinceStartOfDay(timer.elapsed());
 }
 
 void Game::start()
 {
-    disconnect(model, SIGNAL(changed(const QModelIndex &, const QModelIndex &)), this, SLOT(start()));
-    emit started();
-    qDebug() << "Started";
-}
-
-void Game::setStatus(Status s)
-{
-    if (status != s)
-    {
-       status = s;
-       emit statusChanged(status);
-    }
+    qDebug() << "Game started";
+    timer.start();
 }
 
