@@ -27,7 +27,7 @@ class TableModel : public QStandardItemModel
     using Base = QStandardItemModel;
 
 public:
-    TableModel() = default;
+    explicit TableModel(QObject *parent = nullptr);
     explicit TableModel(int rows, int collumns, QObject *parent = nullptr);
 
     void rotate(int row, int collumn, Move direction, int step = 1);
