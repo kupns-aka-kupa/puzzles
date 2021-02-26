@@ -3,6 +3,7 @@
 Game::Game(TableModel *model, QObject *parent)
     : QObject(parent)
     , model(model)
+    , sourceModel(new TableModel(this))
     , tableView(qobject_cast<QTableView *>(parent))
 {
     QState *idle = new QState();
@@ -19,6 +20,9 @@ Game::Game(TableModel *model, QObject *parent)
     connect(inProgress, SIGNAL(entered()), this, SLOT(start()));
 
     machine.start();
+
+    connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(compare(const QModelIndex &, const QModelIndex &)));
 }
 
 void Game::rotateTableModel(
@@ -61,10 +65,17 @@ QPixmap Game::initTablePixmap()
 
 void Game::reset()
 {
+    sourceModel->setColumnCount(model->columnCount());
+    sourceModel->setRowCount(model->rowCount());
+    resetModel(sourceModel);
+    resetModel(model);
+    emit stoped();
+}
+
+void Game::resetModel(TableModel *model)
+{
     QPixmap pixmap(initTablePixmap());
     model->setData(pixmap);
-
-    emit stoped();
 }
 
 QTime Game::currentTime()
@@ -76,5 +87,18 @@ void Game::start()
 {
     qDebug() << "Game started";
     timer.start();
+}
+
+void Game::compare(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+{
+    // TODO QGIS Levenshtein (edit) distance check
+
+    Q_UNUSED(topLeft);
+    Q_UNUSED(bottomRight);
+
+    Q_ASSERT(model->rowCount() == sourceModel->rowCount());
+    Q_ASSERT(model->columnCount() == sourceModel->columnCount());
+
+    //emit finished();
 }
 

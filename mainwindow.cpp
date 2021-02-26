@@ -47,8 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->spinBoxWidth, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
     connect(ui->spinBoxHeight, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
-    connect(game, SIGNAL(started()), this, SLOT(disableControls()));
-    connect(game, SIGNAL(stoped()), this, SLOT(enableControls()));
+    connect(game, SIGNAL(started()), this, SLOT(onStarted()));
+    connect(game, SIGNAL(stoped()), this, SLOT(onStoped()));
+    connect(game, SIGNAL(finished()), this, SLOT(onFinished()));
     connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()));
     connect(ui->pushButtonReset, SIGNAL(clicked()), game, SLOT(reset()));
     connect(shortcut, SIGNAL(activated()), game, SLOT(grabModeActivated()));
@@ -96,8 +97,7 @@ void MainWindow::loadFont()
 
     int id = QFontDatabase::addApplicationFont(file.fileName());
     QString family = QFontDatabase::applicationFontFamilies(id).first();
-    QFont cellFont(family, 50, QFont::Normal);
-    ui->tableView->setFont(cellFont);
+    ui->tableView->setFont({family, 50, QFont::Normal});
 }
 
 void MainWindow::timeUpdate()
@@ -106,7 +106,7 @@ void MainWindow::timeUpdate()
     timerLabel->setText(time);
 }
 
-void MainWindow::disableControls()
+void MainWindow::onStarted()
 {
     connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
 
@@ -116,7 +116,7 @@ void MainWindow::disableControls()
     }
 }
 
-void MainWindow::enableControls()
+void MainWindow::onStoped()
 {
     disconnect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
 
@@ -124,6 +124,12 @@ void MainWindow::enableControls()
     {
         box->setEnabled(true);
     }
+    ui->tableView->setEnabled(true);
+}
+
+void MainWindow::onFinished()
+{
+    ui->tableView->setEnabled(false);
 }
 
 void MainWindow::resetGameModel()
