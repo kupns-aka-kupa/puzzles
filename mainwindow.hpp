@@ -33,8 +33,9 @@ public:
 
 public slots:
     void timeUpdate();
-    void disableControls();
-    void enableControls();
+    void onStarted();
+    void onStoped();
+    void onFinished();
     void resetGameModel();
 
 protected:

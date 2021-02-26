@@ -43,7 +43,6 @@ private:
     QList<QModelIndex> collumnIterator(int i);
     void applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo);
     QList<QModelIndex> rotateHelper(int row, int collumn, Move direction);
-
 };
 
 #endif // TABLE_HPP

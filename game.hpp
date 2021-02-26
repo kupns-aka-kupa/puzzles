@@ -28,14 +28,20 @@ signals:
     void finished();
     void stoped();
 
+private slots:
+    void compare(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+
 private:
+    void resetModel(TableModel *);
     QPixmap initTablePixmap();
 
     TableModel *model;
+    TableModel * const sourceModel;
     QTableView *tableView;
 
     QElapsedTimer timer;
     QStateMachine machine;
+    int equals;
 };
 
 #endif // GAME_HPP
