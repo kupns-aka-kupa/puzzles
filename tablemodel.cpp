@@ -1,27 +1,28 @@
 #include "tablemodel.hpp"
 
 TableModel::TableModel(int rows, int collumns, QObject *parent)
-    : Base(rows, collumns, parent)
-{
-}
+    : Base(rows, collumns, parent) { }
+
+TableModel::TableModel(QObject *parent)
+    : Base(parent) { }
 
 void TableModel::setData(QPixmap &pixmap)
 {
     QImage image = pixmap.toImage();
     auto size = pixmap.rect().size();
-    size.rheight() /= columnCount(); // size.scale(?, ?)
-    size.rwidth() /= rowCount();
+    size.rheight() /= rowCount(); // size.scale(?, ?)
+    size.rwidth() /= columnCount();
 
-    for(int i = 0; i < columnCount(); i++)
+    for(int i = 0; i < rowCount(); i++)
     {
-        for(int j = 0; j < rowCount(); j++)
+        for(int j = 0; j < columnCount(); j++)
         {
             auto index = this->index(i, j, QModelIndex());
-            QRect r {{size.width() * i, size.height() * j}, size};
+            QRect r {{size.width() * j, size.height() * i}, size};
 
             auto color = image.pixelColor(r.topLeft());
             Item item {
-                {QMetaType::QString, QString::number(i * rowCount() + j)},
+                {QMetaType::QString, QString::number(i * columnCount() + j)},
                 {QMetaType::QColor, color}
             };
             Base::setData(index, QVariant::fromValue(item));

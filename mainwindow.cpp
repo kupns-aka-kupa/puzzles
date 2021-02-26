@@ -23,11 +23,15 @@ MainWindow::MainWindow(QWidget *parent)
         header->hide();
     }
 
+    controls.append(ui->pushButtonScrumble);
+    controls.append(ui->spinBoxHeight);
+    controls.append(ui->spinBoxWidth);
+
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Space), tableView);
 
-    model = new TableModel(5, 5, tableView);
+    model = new TableModel(tableView);
     game = new Game(model, tableView);
-    game->reset();
+    resetGameModel();
 
     model->applyConfig({"R0", "U0", "R3", "D1"});
     model->scramble();
@@ -41,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     loadFont();
     setStyleSheet();
 
+    connect(ui->spinBoxWidth, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
+    connect(ui->spinBoxHeight, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
     connect(game, SIGNAL(started()), this, SLOT(disableControls()));
     connect(game, SIGNAL(stoped()), this, SLOT(enableControls()));
     connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()));
@@ -103,17 +109,31 @@ void MainWindow::timeUpdate()
 void MainWindow::disableControls()
 {
     connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
-    ui->pushButtonScrumble->setEnabled(false);
+
+    foreach(auto box, controls)
+    {
+        box->setEnabled(false);
+    }
 }
 
 void MainWindow::enableControls()
 {
     disconnect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
-    ui->pushButtonScrumble->setEnabled(true);
+
+    foreach(auto box, controls)
+    {
+        box->setEnabled(true);
+    }
+}
+
+void MainWindow::resetGameModel()
+{
+    model->setColumnCount(ui->spinBoxWidth->value());
+    model->setRowCount(ui->spinBoxHeight->value());
+    game->reset();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete model;
 }

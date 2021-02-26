@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <QTime>
 #include <QStateMachine>
+#include <QShortcut>
 
 #include "tablemodel.hpp"
 
@@ -24,6 +25,7 @@ public slots:
 
 signals:
     void started();
+    void finished();
     void stoped();
 
 private:

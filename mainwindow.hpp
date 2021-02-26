@@ -7,12 +7,13 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QAbstractItemView>
-#include <QShortcut>
 #include <QPalette>
 #include <QFontDatabase>
 #include <QStandardItemModel>
 #include <QLabel>
 #include <QTimer>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "tablemodel.hpp"
 #include "palette.hpp"
@@ -34,6 +35,7 @@ public slots:
     void timeUpdate();
     void disableControls();
     void enableControls();
+    void resetGameModel();
 
 protected:
     bool event(QEvent *event) override;
@@ -45,6 +47,7 @@ private:
 
     QLabel *timerLabel;
     QTimer *timer;
+    QList<QWidget *> controls;
 
     TableModel *model;
     Game *game;
