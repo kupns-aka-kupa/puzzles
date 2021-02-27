@@ -30,7 +30,7 @@ public:
     explicit TableModel(QObject *parent = nullptr);
     explicit TableModel(int rows, int collumns, QObject *parent = nullptr);
 
-    void rotate(int row, int collumn, Move direction, int step = 1);
+    void rotate(int row, int column, Move direction, int step = 1);
     void rotate(QPoint point, Move direction, int step = 1);
     void applyConfig(QList<QString> config);
     void setData(QPixmap &pixmap);
@@ -40,9 +40,9 @@ public slots:
 
 private:
     QList<QModelIndex> rowIterator(int j);
-    QList<QModelIndex> collumnIterator(int i);
+    QList<QModelIndex> columnIterator(int i);
     void applyRotate(QListIterator<QModelIndex> i, QList<QModelIndex> applyTo);
-    QList<QModelIndex> rotateHelper(int row, int collumn, Move direction);
+    QList<QModelIndex> rotateHelper(int row, int column, Move direction);
 };
 
 #endif // TABLE_HPP

@@ -35,13 +35,12 @@ private:
     void resetModel(TableModel *);
     QPixmap initTablePixmap();
 
-    TableModel *model;
-    TableModel * const sourceModel;
-    QTableView *tableView;
+    TableModel *_model;
+    TableModel * const _sourceModel;
+    QTableView *_tableView;
 
-    QElapsedTimer timer;
-    QStateMachine machine;
-    int equals;
+    QElapsedTimer _timer;
+    QStateMachine _machine;
 };
 
 #endif // GAME_HPP
