@@ -1,0 +1,7 @@
+#ifndef CONF_h_
+#define CONF_h_
+
+#define PROJECT_NAME "${PROJECT_NAME}"
+#define PROJECT_VERSION "${${PROJECT_NAME}_VERSION}"
+
+#endif //CONF_h_
