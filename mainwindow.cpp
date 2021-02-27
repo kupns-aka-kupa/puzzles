@@ -3,13 +3,13 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , timerLabel(new QLabel(this))
-    , timer(new QTimer(this))
-    , ui(new Ui::MainWindow)
+    , _timerLabel(new QLabel(this))
+    , _timer(new QTimer(this))
+    , _ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    auto tableView = ui->tableView;
-    auto statusBar = ui->statusBar;
+    _ui->setupUi(this);
+    auto tableView = _ui->tableView;
+    auto statusBar = _ui->statusBar;
 
     QList<QHeaderView*> headers
     {
@@ -23,20 +23,20 @@ MainWindow::MainWindow(QWidget *parent)
         header->hide();
     }
 
-    controls.append(ui->pushButtonScrumble);
-    controls.append(ui->spinBoxHeight);
-    controls.append(ui->spinBoxWidth);
+    _controls.append(_ui->pushButtonScrumble);
+    _controls.append(_ui->spinBoxHeight);
+    _controls.append(_ui->spinBoxWidth);
 
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Space), tableView);
 
-    model = new TableModel(tableView);
-    game = new Game(model, tableView);
+    _model = new TableModel(tableView);
+    _game = new Game(_model, tableView);
     resetGameModel();
 
-    model->applyConfig({"R0", "U0", "R3", "D1"});
-    model->scramble();
+    _model->applyConfig({"R0", "U0", "R3", "D1"});
+    _model->scramble();
 
-    tableView->setModel(model);
+    tableView->setModel(_model);
     tableView->setItemDelegate(new TableViewItemDelegate(tableView));
 
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -45,21 +45,21 @@ MainWindow::MainWindow(QWidget *parent)
     loadFont();
     setStyleSheet();
 
-    connect(ui->spinBoxWidth, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
-    connect(ui->spinBoxHeight, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
-    connect(game, SIGNAL(started()), this, SLOT(onStarted()));
-    connect(game, SIGNAL(stoped()), this, SLOT(onStoped()));
-    connect(game, SIGNAL(finished()), this, SLOT(onFinished()));
-    connect(ui->pushButtonScrumble, SIGNAL(clicked()), model, SLOT(scramble()));
-    connect(ui->pushButtonReset, SIGNAL(clicked()), game, SLOT(reset()));
-    connect(shortcut, SIGNAL(activated()), game, SLOT(grabModeActivated()));
+    connect(_ui->spinBoxWidth, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
+    connect(_ui->spinBoxHeight, SIGNAL(editingFinished()), this, SLOT(resetGameModel()));
+    connect(_game, SIGNAL(started()), this, SLOT(onStarted()));
+    connect(_game, SIGNAL(stoped()), this, SLOT(onStoped()));
+    connect(_game, SIGNAL(finished()), this, SLOT(onFinished()));
+    connect(_ui->pushButtonScrumble, SIGNAL(clicked()), _model, SLOT(scramble()));
+    connect(_ui->pushButtonReset, SIGNAL(clicked()), _game, SLOT(reset()));
+    connect(shortcut, SIGNAL(activated()), _game, SLOT(grabModeActivated()));
     connect(tableView->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-        game,
+        _game,
         SLOT(rotateTableModel(const QItemSelection &, const QItemSelection &)));
 
-    statusBar->addWidget(timerLabel);
-    timer->start(100);
+    statusBar->addWidget(_timerLabel);
+    _timer->start(100);
 }
 
 bool MainWindow::event(QEvent *event)
@@ -76,7 +76,7 @@ bool MainWindow::event(QEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << "You Pressed Key ";
+    qDebug() << "Pressed Key" << event->key();
 }
 
 void MainWindow::setStyleSheet()
@@ -97,20 +97,20 @@ void MainWindow::loadFont()
 
     int id = QFontDatabase::addApplicationFont(file.fileName());
     QString family = QFontDatabase::applicationFontFamilies(id).first();
-    ui->tableView->setFont({family, 50, QFont::Normal});
+    _ui->tableView->setFont({family, 50, QFont::Normal});
 }
 
 void MainWindow::timeUpdate()
 {
-    QString time = game->currentTime().toString("hh:mm:ss,z");
-    timerLabel->setText(time);
+    QString time = _game->currentTime().toString("hh:mm:ss,z");
+    _timerLabel->setText(time);
 }
 
 void MainWindow::onStarted()
 {
-    connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
+    connect(_timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
 
-    foreach(auto box, controls)
+    foreach(auto box, _controls)
     {
         box->setEnabled(false);
     }
@@ -118,28 +118,28 @@ void MainWindow::onStarted()
 
 void MainWindow::onStoped()
 {
-    disconnect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
+    disconnect(_timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
 
-    foreach(auto box, controls)
+    foreach(auto box, _controls)
     {
         box->setEnabled(true);
     }
-    ui->tableView->setEnabled(true);
+    _ui->tableView->setEnabled(true);
 }
 
 void MainWindow::onFinished()
 {
-    ui->tableView->setEnabled(false);
+    _ui->tableView->setEnabled(false);
 }
 
 void MainWindow::resetGameModel()
 {
-    model->setColumnCount(ui->spinBoxWidth->value());
-    model->setRowCount(ui->spinBoxHeight->value());
-    game->reset();
+    _model->setColumnCount(_ui->spinBoxWidth->value());
+    _model->setRowCount(_ui->spinBoxHeight->value());
+    _game->reset();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete _ui;
 }

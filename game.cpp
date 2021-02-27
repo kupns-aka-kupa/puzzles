@@ -2,24 +2,24 @@
 
 Game::Game(TableModel *model, QObject *parent)
     : QObject(parent)
-    , model(model)
-    , sourceModel(new TableModel(this))
-    , tableView(qobject_cast<QTableView *>(parent))
+    , _model(model)
+    , _sourceModel(new TableModel(this))
+    , _tableView(qobject_cast<QTableView *>(parent))
 {
     QState *idle = new QState();
     QState *inProgress = new QState();
 
-    machine.addState(idle);
-    machine.addState(inProgress);
+    _machine.addState(idle);
+    _machine.addState(inProgress);
 
-    machine.setInitialState(idle);
+    _machine.setInitialState(idle);
 
     idle->addTransition(this, &Game::started, inProgress);
     inProgress->addTransition(this, &Game::stoped, idle);
 
     connect(inProgress, SIGNAL(entered()), this, SLOT(start()));
 
-    machine.start();
+    _machine.start();
 
     connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
             this, SLOT(compare(const QModelIndex &, const QModelIndex &)));
@@ -29,7 +29,7 @@ void Game::rotateTableModel(
     const QItemSelection &selected,
     const QItemSelection &deselected)
 {
-    if(!tableView->dragEnabled()
+    if(!_tableView->dragEnabled()
         || selected.empty()
         || deselected.empty()) return;
 
@@ -38,20 +38,20 @@ void Game::rotateTableModel(
 
     auto vector = QVector2D(f.row(), f.column()) - QVector2D(s.row(), s.column());
     Move move = MoveVector.key(vector.normalized());
-    model->rotate(s.row(), s.column(), move);
+    _model->rotate(s.row(), s.column(), move);
 
     emit started();
 }
 
 void Game::grabModeActivated()
 {
-    tableView->setDragEnabled(!tableView->dragEnabled());
+    _tableView->setDragEnabled(!_tableView->dragEnabled());
 }
 
 QPixmap Game::initTablePixmap()
 {
-    QPixmap pixmap = tableView->grab();
-    auto rect = tableView->rect();
+    QPixmap pixmap = _tableView->grab();
+    auto rect = _tableView->rect();
     Gradient gradient(rect.topLeft(), rect.bottomRight());
 
     gradient.setColorAt(0, Palette::Color::Red);
@@ -65,10 +65,10 @@ QPixmap Game::initTablePixmap()
 
 void Game::reset()
 {
-    sourceModel->setColumnCount(model->columnCount());
-    sourceModel->setRowCount(model->rowCount());
-    resetModel(sourceModel);
-    resetModel(model);
+    _sourceModel->setColumnCount(_model->columnCount());
+    _sourceModel->setRowCount(_model->rowCount());
+    resetModel(_sourceModel);
+    resetModel(_model);
     emit stoped();
 }
 
@@ -80,13 +80,13 @@ void Game::resetModel(TableModel *model)
 
 QTime Game::currentTime()
 {
-    return QTime::fromMSecsSinceStartOfDay(timer.elapsed());
+    return QTime::fromMSecsSinceStartOfDay(_timer.elapsed());
 }
 
 void Game::start()
 {
     qDebug() << "Game started";
-    timer.start();
+    _timer.start();
 }
 
 void Game::compare(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -96,8 +96,8 @@ void Game::compare(const QModelIndex &topLeft, const QModelIndex &bottomRight)
     Q_UNUSED(topLeft);
     Q_UNUSED(bottomRight);
 
-    Q_ASSERT(model->rowCount() == sourceModel->rowCount());
-    Q_ASSERT(model->columnCount() == sourceModel->columnCount());
+    Q_ASSERT(_model->rowCount() == _sourceModel->rowCount());
+    Q_ASSERT(_model->columnCount() == _sourceModel->columnCount());
 
     //emit finished();
 }

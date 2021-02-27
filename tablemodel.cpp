@@ -1,7 +1,7 @@
 #include "tablemodel.hpp"
 
-TableModel::TableModel(int rows, int collumns, QObject *parent)
-    : Base(rows, collumns, parent) { }
+TableModel::TableModel(int rows, int columns, QObject *parent)
+    : Base(rows, columns, parent) { }
 
 TableModel::TableModel(QObject *parent)
     : Base(parent) { }
@@ -35,10 +35,10 @@ void TableModel::rotate(QPoint point, Move direction, int step)
     rotate(point.x(), point.y(), direction, step);
 }
 
-void TableModel::rotate(int row, int collumn, Move direction, int step)
+void TableModel::rotate(int row, int column, Move direction, int step)
 {
-    QList<QModelIndex> l = rotateHelper(row, collumn, direction);
-    QListIterator<QModelIndex> i = rotateHelper(row, collumn, direction);
+    QList<QModelIndex> l = rotateHelper(row, column, direction);
+    QListIterator<QModelIndex> i = rotateHelper(row, column, direction);
 
     switch(direction)
     {
@@ -55,7 +55,7 @@ void TableModel::rotate(int row, int collumn, Move direction, int step)
     applyRotate(i, l);
 }
 
-QList<QModelIndex> TableModel::rotateHelper(int row, int collumn, Move direction)
+QList<QModelIndex> TableModel::rotateHelper(int row, int column, Move direction)
 {
     switch(direction)
     {
@@ -64,7 +64,7 @@ QList<QModelIndex> TableModel::rotateHelper(int row, int collumn, Move direction
             return rowIterator(row);
         case Move::Down:
         case Move::Up:
-            return collumnIterator(collumn);
+            return columnIterator(column);
         default:
             Q_ASSERT_X(false, __func__, "Unexpected rotation direction %0"_Q .arg(direction).toLocal8Bit());
     }
@@ -98,7 +98,7 @@ QList<QModelIndex> TableModel::rowIterator(int row)
     return list;
 }
 
-QList<QModelIndex> TableModel::collumnIterator(int collumn)
+QList<QModelIndex> TableModel::columnIterator(int collumn)
 {
     QList<QModelIndex> list;
 

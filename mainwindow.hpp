@@ -12,8 +12,6 @@
 #include <QStandardItemModel>
 #include <QLabel>
 #include <QTimer>
-#include <QJsonDocument>
-#include <QJsonArray>
 
 #include "tablemodel.hpp"
 #include "palette.hpp"
@@ -46,12 +44,12 @@ private:
     void loadFont();
     void setStyleSheet();
 
-    QLabel *timerLabel;
-    QTimer *timer;
-    QList<QWidget *> controls;
+    QLabel *_timerLabel;
+    QTimer *_timer;
+    QList<QWidget *> _controls;
 
-    TableModel *model;
-    Game *game;
-    Ui::MainWindow *ui;
+    TableModel *_model;
+    Game *_game;
+    Ui::MainWindow *_ui;
 };
 #endif // MAINWINDOW_HPP

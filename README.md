@@ -1,3 +1,6 @@
 # Puzzles
 
-![screenshot](screenshot_1.png)
+![screenshot](images/screenshot_1.png)
+
+### TODO 
+- Slider puzzle
